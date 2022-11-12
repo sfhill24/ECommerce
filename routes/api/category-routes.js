@@ -16,6 +16,7 @@ router.get('/', async (req, res) => {
         }
       ]
     })
+    res.json(allCategeories);
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
@@ -37,6 +38,8 @@ router.get('/:id', async (req, res) => {
         }
       ]
     })
+    res.json(oneCategory);
+
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
@@ -47,8 +50,9 @@ router.post('/create', async (req, res) => {
   // create a new category
   try {
     let newCategory = await Category.create({
-      category_name: req.body.category_name
+      category_name: req.body.category_name,
     })
+    res.json(newCategory);
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
@@ -58,11 +62,12 @@ router.post('/create', async (req, res) => {
 router.put('/:id', async (req, res) => {
   // update a category by its `id` value
   try {
-    let updateCategory = await Category.update({
+    let updateCategory = await Category.update(req.body, {
       where: {
         id: req.params.id
       },
     })
+    res.json(updateCategory);
   } catch (err) {
     console.log(err);
     res.status(500).json(err);

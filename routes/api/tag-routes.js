@@ -7,7 +7,7 @@ router.get('/', async (req, res) => {
   // find all tags
   // be sure to include its associated Product data
   try {
-    let allPrallTags = await Tag.findAll({
+    let allTags = await Tag.findAll({
       include: [
         {
           model: Product,
@@ -15,6 +15,7 @@ router.get('/', async (req, res) => {
         },
       ]
     })
+    res.json(allTags);
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
@@ -36,18 +37,20 @@ router.get('/:id', async (req, res) => {
         },
       ]
     })
-  } catch(err) {
+    res.json(oneTag);
+  } catch (err) {
     console.log(err);
     res.status(500).json(err);
   }
 });
 
-router.post('/', async (req, res) => {
+router.post('/create', async (req, res) => {
   // create a new tag
   try {
     let newTag = await Tag.create({
-     tag_name: req.body.tag_name
+      tag_name: req.body.tag_name
     })
+    res.json(newTag);
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
@@ -57,11 +60,18 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
   // update a tag's name by its `id` value
   try {
-    let updateTag = await Tag.update({
+    let updateTag = await Tag.update({ tag_name: req.body.tag_name }, {
       where: {
         id: req.params.id
       },
+      include: [
+        {
+          model: ProductTag,
+          attributes: ["id", "product_id", "tag_id"]
+        }
+      ]
     })
+    res.status(204).json();
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
@@ -76,6 +86,7 @@ router.delete('/:id', async (req, res) => {
         id: req.params.id
       }
     })
+    res.json(deletedTag);
   } catch (err) {
     console.log(err);
     res.status(500).json(err);

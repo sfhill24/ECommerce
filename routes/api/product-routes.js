@@ -9,10 +9,11 @@ router.get('/', async (req, res) => {
   // be sure to include its associated Category and Tag data
   try {
     let allProducts = await Product.findAll({
+      
       include: [
         {
           model: Category,
-          attributes: ["id", "product_name", "price", "stock", "category_id"]
+          attributes: ["id", "category_name"]
         },
         {
           model: Tag,
@@ -20,6 +21,7 @@ router.get('/', async (req, res) => {
         }
       ]
     })
+    res.json(allProducts);
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
@@ -38,7 +40,7 @@ router.get('/:id', async (req, res) => {
       include: [
         {
           model: Category,
-          attributes: ["id", "product_name", "price", "stock", "category_id"]
+          attributes: ["id", "category_name"]
         },
         {
           model: Tag,
@@ -46,6 +48,7 @@ router.get('/:id', async (req, res) => {
         }
       ]
     })
+    res.json(oneProduct);
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
@@ -53,7 +56,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // create new product
-router.post('/', (req, res) => {
+router.post('/create', (req, res) => {
   Product.create({
     product_name: req.body.product_name,
     price: req.body.price,
@@ -117,7 +120,7 @@ router.put('/:id', (req, res) => {
         ProductTag.bulkCreate(newProductTags),
       ]);
     })
-    .then((updatedProductTags) => res.json(updatedProductTags))
+    .then((updatedProductTags) => res.json({message: "Product has been updated successfully!"}))
     .catch((err) => {
       // console.log(err);
       res.status(400).json(err);
@@ -131,6 +134,8 @@ router.delete('/:id', async (req, res) => {
         id: req.params.id
       }
     })
+
+    res.json(deletedProduct);
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
